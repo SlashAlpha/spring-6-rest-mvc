@@ -1,4 +1,4 @@
-package model;
+package slash.code.spring6restmvc.model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +20,7 @@ public class Beer {
     private BigDecimal price;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+
 
 
 }

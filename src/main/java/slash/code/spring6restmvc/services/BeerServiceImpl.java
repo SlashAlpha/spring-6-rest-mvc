@@ -1,12 +1,11 @@
-package services;
+package slash.code.spring6restmvc.services;
 
-import model.Beer;
-import model.BeerStyle;
+import slash.code.spring6restmvc.model.Beer;
+import slash.code.spring6restmvc.model.BeerStyle;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Service

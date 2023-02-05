@@ -1,6 +1,6 @@
-package services;
+package slash.code.spring6restmvc.services;
 
-import model.Beer;
+import slash.code.spring6restmvc.model.Beer;
 
 import java.util.UUID;
 
