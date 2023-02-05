@@ -1,21 +1,20 @@
 package slash.code.spring6restmvc.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import slash.code.spring6restmvc.model.Beer;
-import slash.code.spring6restmvc.model.BeerStyle;
 import slash.code.spring6restmvc.model.Customer;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    Map<UUID,Customer> customerList;
+    Map<UUID,Customer> customerMap;
 
     public CustomerServiceImpl() {
-        this.customerList=new HashMap<>();
+        this.customerMap =new HashMap<>();
         Customer customer1=
                 Customer.builder()
                         .id(UUID.randomUUID())
@@ -41,20 +40,20 @@ public class CustomerServiceImpl implements CustomerService {
                         .updateDate(LocalDateTime.now())
                         .build();
 
-        customerList.put(customer1.getId(),customer1);
-        customerList.put(customer2.getId(),customer2);
-        customerList.put(customer3.getId(),customer3);
+        customerMap.put(customer1.getId(),customer1);
+        customerMap.put(customer2.getId(),customer2);
+        customerMap.put(customer3.getId(),customer3);
 
     }
 
     @Override
     public List<Customer> listCustomers() {
-        return new ArrayList<>(customerList.values());
+        return new ArrayList<>(customerMap.values());
     }
 
     @Override
     public Customer getCustomerById(UUID uuid) {
-        return customerList.get(uuid);
+        return customerMap.get(uuid);
     }
 
     @Override
@@ -67,7 +66,34 @@ public class CustomerServiceImpl implements CustomerService {
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .build();
-      customerList.put(savedCustomer.getId(),savedCustomer);
+      customerMap.put(savedCustomer.getId(),savedCustomer);
         return savedCustomer;
+    }
+
+    @Override
+    public Customer updateCustomerById(UUID customerId, Customer customer) {
+        Customer existingCustomer= customerMap.get(customerId);
+        existingCustomer.setCustomerName(customer.getCustomerName());
+        existingCustomer.setVersion(customer.getVersion());
+        existingCustomer.setUpdateDate(LocalDateTime.now());
+       return customerMap.put(customerId,existingCustomer);
+
+    }
+
+    @Override
+    public void deleteCustomerById(UUID customerId) {
+        customerMap.remove(customerId);
+    }
+
+    @Override
+    public void patchCustomerById(UUID customerId, Customer customer) {
+        Customer existing = customerMap.get(customerId);
+
+        if (StringUtils.hasText(customer.getCustomerName())){
+            existing.setCustomerName(customer.getCustomerName());
+        }
+        if (StringUtils.hasText(customer.getVersion().toString())){
+            existing.setVersion(customer.getVersion());
+        }
     }
 }
