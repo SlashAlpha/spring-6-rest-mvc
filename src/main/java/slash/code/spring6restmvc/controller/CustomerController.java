@@ -1,6 +1,8 @@
 package slash.code.spring6restmvc.controller;
 
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,15 +15,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
+@AllArgsConstructor
 @RestController
 @RequestMapping("api/v1/customer")
 public class CustomerController {
 
+
     CustomerService customerService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
+
 
     @RequestMapping(method = RequestMethod.GET)
     List<Customer> getAllCustomer(){
