@@ -79,4 +79,9 @@ class CustomerControllerTest {
         System.out.println(objectMapper.writeValueAsString(customer));
 
     }
+
+    @Test
+    void updateCustomerTest() {
+
+    }
 }
