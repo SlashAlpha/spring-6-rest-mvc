@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/beer")
 public class BeerController {
 
