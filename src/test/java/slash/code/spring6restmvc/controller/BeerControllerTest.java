@@ -1,9 +1,10 @@
 package slash.code.spring6restmvc.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,9 +17,9 @@ import slash.code.spring6restmvc.services.BeerServiceImpl;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,6 +35,9 @@ class BeerControllerTest {
 
     @MockBean
     BeerService beerService;
+
+    @Captor
+    ArgumentCaptor<UUID> argumentCaptor;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -109,10 +113,24 @@ class BeerControllerTest {
                 .content(objectMapper.writeValueAsString(beer)))
                         .andExpect(status().isOk());
 
-
-
         verify(beerService).updateBeerById(any(UUID.class),any(Beer.class));
 
+
+    }
+
+    @Test
+    void deleteBeerTest() throws Exception {
+        Beer beer=beerServiceImpl.listBeers().get(0);
+
+
+        mockMvc.perform(delete("/api/v1/beer/"+beer.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+        //verfify the UUID argument(originally the uri path variable) passed in the delete method of the controller
+
+        verify(beerService).deleteById(argumentCaptor.capture());
+
+        assertThat(beer.getId()).isEqualTo(argumentCaptor.getValue());
 
     }
 }

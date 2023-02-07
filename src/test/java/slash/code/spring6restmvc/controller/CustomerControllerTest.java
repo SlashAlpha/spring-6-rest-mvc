@@ -4,6 +4,8 @@ package slash.code.spring6restmvc.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,15 +13,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import slash.code.spring6restmvc.model.Beer;
 import slash.code.spring6restmvc.model.Customer;
 import slash.code.spring6restmvc.services.CustomerService;
 import slash.code.spring6restmvc.services.CustomerServiceImpl;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -30,6 +36,9 @@ class CustomerControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Captor
+    ArgumentCaptor<UUID> argumentCaptor;
 
 
     @Autowired
@@ -81,7 +90,28 @@ class CustomerControllerTest {
     }
 
     @Test
-    void updateCustomerTest() {
+    void updateCustomerTest() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+        mockMvc.perform(put("/api/v1/customer/"+customer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isOk());
+        verify(customerService).updateCustomerById(any(UUID.class),any(Customer.class));
+
+    }
+
+    @Test
+    void deleteCustomerTest() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+mockMvc.perform(delete("/api/v1/customer/"+customer.getId())
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
+
+
+        verify(customerService).deleteCustomerById(argumentCaptor.capture());
+        assertThat(customer.getId()).isEqualTo(argumentCaptor.getValue());
+
 
     }
 }
