@@ -19,6 +19,10 @@ import java.util.UUID;
 @RequestMapping("/api/v1/beer")
 public class BeerController {
 
+    public static final String BEER_URI="/api/v1/beer";
+    public static final String BEER_PATH_PARAM="{beerId}";
+    public static final String BEER_PATH_ID = BEER_URI + "/"+BEER_PATH_PARAM;
+
     private final BeerService beerService;
 
     @RequestMapping(method = RequestMethod.GET)
@@ -26,7 +30,7 @@ public class BeerController {
         return beerService.listBeers();
     }
 
-    @RequestMapping(value = "{beerId}",method = RequestMethod.GET)
+    @RequestMapping(value = BEER_PATH_PARAM,method = RequestMethod.GET)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId){
         log.debug("GetBeer By Id in Beer Controller");
        return beerService.getBeerById(beerId);
@@ -39,12 +43,12 @@ public class BeerController {
         HttpHeaders headers= new HttpHeaders();
 
       Beer savedBeer=  beerService.saveNewBeer(newBeer);
-        headers.add("Location","/api/v1/beer/"+savedBeer.getId().toString());
+        headers.add("Location",BEER_URI+"/"+savedBeer.getId().toString());
        return new ResponseEntity<Beer>(headers,HttpStatus.CREATED);
 
     }
 
-    @PutMapping("{beerId}")
+    @PutMapping(BEER_PATH_PARAM)
     public ResponseEntity<Beer> updateById(@PathVariable("beerId") UUID beerId,@RequestBody Beer beer){
 
 
@@ -52,13 +56,13 @@ public class BeerController {
 
     }
 
-    @DeleteMapping("{beerId}")
+    @DeleteMapping(BEER_PATH_PARAM)
     public  ResponseEntity<Beer> deleteById(@PathVariable("beerId")UUID beerId){
         beerService.deleteById(beerId);
         return new ResponseEntity<Beer>(HttpStatus.NO_CONTENT);
 
     }
-    @PatchMapping("{beerId}")
+    @PatchMapping(BEER_PATH_PARAM)
     public ResponseEntity<Beer> patchById(@PathVariable("beerId") UUID beerId,@RequestBody Beer beer){
 
         beerService.patchBeerById(beerId,beer);

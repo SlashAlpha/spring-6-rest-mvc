@@ -22,6 +22,9 @@ public class CustomerController {
 
 
     CustomerService customerService;
+    public static final String CUSTOMER_URI="/api/v1/customer";
+    public static final String CUSTOMER_PATH_PARAM="{customerId}";
+    public static final String CUSTOMER_PATH_ID=CUSTOMER_URI+"/"+CUSTOMER_PATH_PARAM;
 
 
 
@@ -30,7 +33,7 @@ public class CustomerController {
        return customerService.listCustomers();
     }
 
-    @RequestMapping(value = "{customerId}",method = RequestMethod.GET)
+    @RequestMapping(value = CUSTOMER_PATH_PARAM,method = RequestMethod.GET)
     Customer getCustomerById(@PathVariable("customerId")  UUID customerId){
         log.debug("GetCustomer By Id in Customer Controller");
        return customerService.getCustomerById(customerId);
@@ -42,17 +45,17 @@ public class CustomerController {
         HttpHeaders headers= new HttpHeaders();
 
         Customer savedCustomer=  customerService.savedNewCustomer(customer);
-        headers.add("Location","/api/v1/customer/"+savedCustomer.getId().toString());
+        headers.add("Location",CUSTOMER_URI+"/"+savedCustomer.getId().toString());
         return new ResponseEntity<Customer>(headers, HttpStatus.CREATED);
 
     }
-    @PutMapping("{customerId}")
+    @PutMapping(CUSTOMER_PATH_PARAM)
     public ResponseEntity<Customer> updateById(@PathVariable("customerId") UUID customerId,@RequestBody Customer customer) {
 
         return new ResponseEntity<Customer>(customerService.updateCustomerById(customerId, customer), HttpStatus.OK);
     }
 
-    @DeleteMapping("{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_PARAM)
     public  ResponseEntity<Customer> deleteById(@PathVariable("customerId") UUID customerId){
         customerService.deleteCustomerById(customerId);
 
@@ -60,7 +63,7 @@ public class CustomerController {
 
     }
 
-    @PatchMapping("{customerId}")
+    @PatchMapping(CUSTOMER_PATH_PARAM)
     public ResponseEntity<Customer> patchById(@PathVariable("customerId") UUID customerId,@RequestBody Customer customer) {
                 customerService.patchCustomerById(customerId,customer);
         return new ResponseEntity<Customer>( HttpStatus.OK);
