@@ -36,7 +36,7 @@ public class CustomerController {
     @RequestMapping(value = CUSTOMER_PATH_PARAM,method = RequestMethod.GET)
     Customer getCustomerById(@PathVariable("customerId")  UUID customerId){
         log.debug("GetCustomer By Id in Customer Controller");
-       return customerService.getCustomerById(customerId);
+       return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping
@@ -68,6 +68,7 @@ public class CustomerController {
                 customerService.patchCustomerById(customerId,customer);
         return new ResponseEntity<Customer>( HttpStatus.OK);
     }
+
 
 
 }

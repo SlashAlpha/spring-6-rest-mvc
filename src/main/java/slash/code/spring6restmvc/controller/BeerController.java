@@ -33,7 +33,7 @@ public class BeerController {
     @RequestMapping(value = BEER_PATH_PARAM,method = RequestMethod.GET)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId){
         log.debug("GetBeer By Id in Beer Controller");
-       return beerService.getBeerById(beerId);
+       return beerService.getBeerById(beerId).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping
@@ -69,6 +69,8 @@ public class BeerController {
         return new ResponseEntity<Beer>(HttpStatus.OK);
 
     }
+
+
 
 
 }
