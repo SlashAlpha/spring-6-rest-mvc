@@ -15,6 +15,8 @@ import slash.code.spring6restmvc.services.BeerService;
 import slash.code.spring6restmvc.services.BeerServiceImpl;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +39,10 @@ class BeerControllerTest {
     BeerService beerService;
 
     @Captor
-    ArgumentCaptor<UUID> argumentCaptor;
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Beer> argumentCaptor;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -128,9 +133,28 @@ class BeerControllerTest {
                 .andExpect(status().isNoContent());
         //verfify the UUID argument(originally the uri path variable) passed in the delete method of the controller
 
-        verify(beerService).deleteById(argumentCaptor.capture());
+        verify(beerService).deleteById(uuidArgumentCaptor.capture());
 
-        assertThat(beer.getId()).isEqualTo(argumentCaptor.getValue());
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+
+    }
+
+    @Test
+    void patchBeerTest() throws Exception {
+
+        Beer beer=beerServiceImpl.listBeers().get(0);
+
+        Map<String,Object> beerMap=new HashMap<>();
+        beerMap.put("beerName","New Name");
+        mockMvc.perform(patch("/api/v1/beer/"+beer.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isOk());
+
+        verify(beerService).patchBeerById(uuidArgumentCaptor.capture(), argumentCaptor.capture());
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(beerMap.get("beerName")).isEqualTo(argumentCaptor.getValue().getBeerName());
 
     }
 }
