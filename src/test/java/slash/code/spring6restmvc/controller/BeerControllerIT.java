@@ -13,7 +13,6 @@ import slash.code.spring6restmvc.model.BeerDTO;
 import slash.code.spring6restmvc.model.BeerStyle;
 import slash.code.spring6restmvc.repositories.BeerRepository;
 
-import java.rmi.NotBoundException;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +30,51 @@ class BeerControllerIT {
     BeerRepository beerRepository;
     @Autowired
     BeerMapper beerMapper;
+
+
+    @Transactional
+    @Rollback
+    @Test
+    void patchIdFound() {
+        Beer beer=beerRepository.findAll().get(0);
+        BeerDTO beerDTO=beerMapper.beerToBeerDTO(beer);
+        final String beerName= "UPDATED";
+        beerDTO.setBeerName(beerName);
+        ResponseEntity responseEntity=beerController.patchById(beer.getId(),beerDTO);
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
+        Beer patchedBeer= beerRepository.findById(beer.getId()).get();
+        assertThat(patchedBeer.getBeerName()).isEqualTo(beerName);
+    }
+
+    @Test
+    void patchIdNotFound() {
+
+        assertThrows(NotFoundException.class,()->{
+            beerController.patchById(UUID.randomUUID(),BeerDTO.builder().build());
+        });
+
+    }
+
+    @Transactional
+    @Rollback
+    @Test
+    void deleteByIdFound() {
+        Beer beer=beerRepository.findAll().get(0);
+        ResponseEntity responseEntity=beerController.deleteById(beer.getId());
+
+        assertThat(responseEntity.getStatusCode().value()).isEqualTo(204);
+
+        assertThat(beerRepository.findById(beer.getId()).isEmpty());
+
+
+    }
+
+    @Test
+    void deleteByIdNotFound() {
+        assertThrows(NotFoundException.class,()->{
+            beerController.deleteById(UUID.randomUUID());
+        });
+    }
 
     @Rollback
     @Transactional

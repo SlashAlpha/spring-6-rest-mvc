@@ -47,24 +47,32 @@ public class BeerController {
     }
 
     @PutMapping(BEER_PATH_PARAM)
-    public ResponseEntity<BeerDTO> updateById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer){
+    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer){
 
         if (beerService.updateBeerById(beerId,beer).isEmpty()){
             throw new NotFoundException();
         }
 
-        return new ResponseEntity<BeerDTO>(beerService.updateBeerById(beerId,beer).get(),HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
 
     }
 
     @DeleteMapping(BEER_PATH_PARAM)
     public  ResponseEntity<BeerDTO> deleteById(@PathVariable("beerId")UUID beerId){
-        beerService.deleteById(beerId);
+        ;
+        if (!beerService.deleteById(beerId)){
+            throw new NotFoundException();
+        }
+
         return new ResponseEntity<BeerDTO>(HttpStatus.NO_CONTENT);
 
     }
     @PatchMapping(BEER_PATH_PARAM)
     public ResponseEntity<BeerDTO> patchById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer){
+
+        if (beerService.patchBeerById(beerId,beer).isEmpty()){
+            throw new NotFoundException();
+        }
 
         beerService.patchBeerById(beerId,beer);
         return new ResponseEntity<BeerDTO>(HttpStatus.OK);
