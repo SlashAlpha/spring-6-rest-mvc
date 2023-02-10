@@ -3,10 +3,14 @@ package slash.code.spring6restmvc.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import slash.code.spring6restmvc.entities.Beer;
+import slash.code.spring6restmvc.mappers.BeerMapper;
 import slash.code.spring6restmvc.model.BeerDTO;
+import slash.code.spring6restmvc.model.BeerStyle;
 import slash.code.spring6restmvc.repositories.BeerRepository;
 
 import java.rmi.NotBoundException;
@@ -25,6 +29,52 @@ class BeerControllerIT {
     BeerController beerController;
     @Autowired
     BeerRepository beerRepository;
+    @Autowired
+    BeerMapper beerMapper;
+
+    @Rollback
+    @Transactional
+    @Test
+    void updateExistingBeerTest() {
+        Beer beer=beerRepository.findAll().get(0);
+        BeerDTO beerDTO=beerMapper.beerToBeerDTO(beer);
+        beerDTO.setId(null);
+        beerDTO.setVersion(null);
+        final String beerName= "UPDATED";
+        beerDTO.setBeerName(beerName);
+        ResponseEntity responseEntity=beerController.updateById(beer.getId(),beerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.valueOf(200));
+
+        Beer updatedBeer= beerRepository.findById(beer.getId()).get();
+        assertThat(updatedBeer.getBeerName()).isEqualTo(beerName);
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        assertThrows(NotFoundException.class,()->{
+            beerController.updateById(UUID.randomUUID(),BeerDTO.builder().build());
+        });
+                    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void saveBeerTest() {
+
+        BeerDTO beerDTO=BeerDTO.builder()
+                .beerName("crik")
+                .beerStyle(BeerStyle.SAISON)
+                .build();
+
+        ResponseEntity responseEntity=beerController.handlePost(beerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.valueOf(201));
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+        String[] locationUUID= responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID saveUUID =UUID.fromString(locationUUID[4]);
+        Beer beer=beerRepository.findById(saveUUID).orElse(null);
+        assertThat(beer).isNotNull();
+
+    }
 
     @Test
     void testGetBeerIdNotFound() {
@@ -59,4 +109,6 @@ class BeerControllerIT {
         assertThat(dtos.size()).isEqualTo(0);
 
     }
+
+
 }

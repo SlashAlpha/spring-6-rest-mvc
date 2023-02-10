@@ -10,6 +10,7 @@ import slash.code.spring6restmvc.repositories.BeerRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,12 +32,20 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
-        return null;
+        return beerMapper.beerToBeerDTO(beerRepository.save(beerMapper.beerDTOToBeer(beer)));
     }
 
     @Override
-    public BeerDTO updateBeerById(UUID beerId, BeerDTO beer) {
-        return null;
+    public Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer) {
+        AtomicReference<Optional<BeerDTO>> atomicReference=new AtomicReference<>();
+        beerRepository.findById(beerId).ifPresentOrElse(foundBeer -> {
+            foundBeer.setBeerName(beer.getBeerName());
+            foundBeer.setBeerStyle(beer.getBeerStyle());
+            foundBeer.setUpc(beer.getUpc());
+            foundBeer.setPrice(beer.getPrice());
+      atomicReference.set(Optional.of( beerMapper.beerToBeerDTO(  beerRepository.save(foundBeer))));
+        },()->{atomicReference.set(Optional.empty());});
+        return  atomicReference.get();
     }
 
     @Override
