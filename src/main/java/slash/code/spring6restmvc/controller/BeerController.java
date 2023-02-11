@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import slash.code.spring6restmvc.model.BeerDTO;
 import slash.code.spring6restmvc.services.BeerService;
@@ -36,7 +37,7 @@ public class BeerController {
 
     @PostMapping
     //@RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<BeerDTO> handlePost(@RequestBody BeerDTO newBeer){
+    public ResponseEntity<BeerDTO> handlePost(@Validated @RequestBody BeerDTO newBeer){
 
         HttpHeaders headers= new HttpHeaders();
 
@@ -47,7 +48,7 @@ public class BeerController {
     }
 
     @PutMapping(BEER_PATH_PARAM)
-    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer){
+    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId,@Validated @RequestBody BeerDTO beer){
 
         if (beerService.updateBeerById(beerId,beer).isEmpty()){
             throw new NotFoundException();
@@ -78,6 +79,7 @@ public class BeerController {
         return new ResponseEntity<BeerDTO>(HttpStatus.OK);
 
     }
+
 
 
 
