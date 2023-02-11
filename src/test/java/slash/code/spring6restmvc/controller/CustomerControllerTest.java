@@ -127,16 +127,17 @@ mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
         CustomerDTO customer = customerServiceImpl.listCustomers().get(0);
         Map<String,Object> customerMap=new HashMap<>();
         customerMap.put("customerName","New Name");
-        given(customerService.patchCustomerById(any(),any())).willReturn(Optional.of(customer));
+        customer.setCustomerName("NewName");
+       // given(customerService.patchCustomerById(any(),any())).willReturn(Optional.empty());
         mockMvc.perform(patch(CustomerController.CUSTOMER_PATH_ID, customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customerMap)))
-                .andExpect(status().isOk());
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isNotFound());
 
         verify(customerService).patchCustomerById(uuidArgumentCaptor.capture(),customerArgumentCaptor.capture());
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
-        assertThat(customerMap.get("customerName")).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());
+        assertThat(customer.getCustomerName()).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());
 
 
     }

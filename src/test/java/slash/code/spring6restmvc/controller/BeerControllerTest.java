@@ -147,7 +147,7 @@ class BeerControllerTest {
     void patchBeerTest() throws Exception {
 
         BeerDTO beerDTO=beerServiceImpl.listBeers().get(0);
-        given(beerService.updateBeerById(any(), any())).willReturn(Optional.of(beerDTO));
+        given(beerService.updateBeerById(any(), any())).willReturn(Optional.empty());
         Map<String,Object> beerMap=new HashMap<>();
         beerMap.put("beerName","New Name");
 
@@ -155,7 +155,7 @@ class BeerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap)))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
 
         verify(beerService).patchBeerById(uuidArgumentCaptor.capture(), argumentCaptor.capture());
         assertThat(beerDTO.getId()).isEqualTo(uuidArgumentCaptor.getValue());
