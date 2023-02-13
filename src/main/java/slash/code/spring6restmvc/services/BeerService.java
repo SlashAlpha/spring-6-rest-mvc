@@ -1,6 +1,7 @@
 package slash.code.spring6restmvc.services;
 
 import slash.code.spring6restmvc.model.BeerDTO;
+import slash.code.spring6restmvc.model.BeerStyle;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,9 @@ public interface BeerService {
 
    Optional<BeerDTO> getBeerById(UUID id);
 
-    List<BeerDTO> listBeers();
+    List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory);
+
+
 
     BeerDTO saveNewBeer(BeerDTO beer);
 

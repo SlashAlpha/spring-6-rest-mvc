@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import slash.code.spring6restmvc.model.BeerDTO;
+import slash.code.spring6restmvc.model.BeerStyle;
 import slash.code.spring6restmvc.services.BeerService;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class BeerController {
 
     private final BeerService beerService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<BeerDTO> listBeers(){
-        return beerService.listBeers();
+    @GetMapping
+    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName, @RequestParam(required = false) BeerStyle beerStyle,@RequestParam(required = false) Boolean showInventory){
+        return beerService.listBeers(beerName,beerStyle, showInventory);
     }
 
     @RequestMapping(value = BEER_PATH_PARAM,method = RequestMethod.GET)
