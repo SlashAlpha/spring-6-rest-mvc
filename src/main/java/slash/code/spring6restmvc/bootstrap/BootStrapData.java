@@ -38,7 +38,7 @@ public class BootStrapData implements CommandLineRunner {
         loadCustomerData();
         loadCsvData();
     }
-
+//great impl
     private void loadCsvData() throws FileNotFoundException {
         if (beerRepository.count()<10){
             File file= ResourceUtils.getFile("classpath:csvdata/beers.csv");
