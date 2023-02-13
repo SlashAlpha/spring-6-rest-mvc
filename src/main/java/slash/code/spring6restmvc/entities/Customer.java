@@ -1,6 +1,7 @@
 package slash.code.spring6restmvc.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -22,6 +23,10 @@ public class Customer {
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
      private UUID id;
+
+    @Email
+    String email;
+
     @Version
     private Integer version;
     private String customerName;
