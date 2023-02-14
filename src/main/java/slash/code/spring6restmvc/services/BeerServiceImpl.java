@@ -1,6 +1,8 @@
 package slash.code.spring6restmvc.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.util.StringUtils;
 import slash.code.spring6restmvc.model.BeerDTO;
 import slash.code.spring6restmvc.model.BeerStyle;
@@ -63,8 +65,8 @@ public class BeerServiceImpl implements BeerService {
 
 
     @Override
-    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory) {
-        return new ArrayList<>(beerMap.values());
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory, Integer pageNumber, Integer pageSize) {
+        return new PageImpl<BeerDTO>(new ArrayList<>(beerMap.values()));
     }
 
     public Optional<BeerDTO> getBeerById(UUID id){
