@@ -8,6 +8,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -32,5 +35,9 @@ public class Customer {
     private String customerName;
     private LocalDateTime createdDate;
     private LocalDateTime updateDate;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "customer")
+    Set<BeerOrder> beerOrders=new HashSet<>();
 
 }
